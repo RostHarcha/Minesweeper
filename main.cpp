@@ -7,7 +7,7 @@
 #include "ConsoleController.h"
 #include "AI.h"
 
-constexpr auto DEBUG_MODE = 1;
+constexpr auto DEBUG_MODE = 0;
 constexpr auto AI_MODE = 0;
 
 class Game {
@@ -15,7 +15,7 @@ private:
   Map map;
   ConsoleDrawer drawer;
   ConsoleController controller;
-  //AI ai;
+  AI ai;
   Settings set;
   std::string comment;
   GameState game_state = GameState::game;
