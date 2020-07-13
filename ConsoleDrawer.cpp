@@ -81,7 +81,8 @@ void ConsoleDrawer::draw(std::vector<CellState> state, std::string comment) {
   }
 }
 
-void ConsoleDrawer::non_signs_draw(Settings set, std::string comment) {
+void ConsoleDrawer::non_signs_draw(Settings _set, std::string comment) {
+  set = _set;
   std::vector<CellState> state;
   for (auto i = 0; i < set.size_x * set.size_y; i++) {
     state.push_back(CellState::Closed);
