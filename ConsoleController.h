@@ -2,10 +2,9 @@
 #include <vector>
 #include "globalStructures.h"
 class ConsoleController {
-  Settings set;
+  Settings m_set;
   std::vector<std::string> decompose_command(std::string input);
   Command analyse_command(std::vector<std::string> command);
 public:
-  void create(Settings _set);
   Command get_input();
 };

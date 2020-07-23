@@ -1,5 +1,9 @@
 #pragma once
 #include <string>
+
+constexpr auto DEBUG_MODE = 0;
+constexpr auto AI_MODE = 0;
+
 struct Settings {
   int size_x = 15;
   int size_y = 25;

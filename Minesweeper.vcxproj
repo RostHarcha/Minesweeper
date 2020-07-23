@@ -22,6 +22,7 @@
     <ClInclude Include="AI.h" />
     <ClInclude Include="ConsoleController.h" />
     <ClInclude Include="ConsoleDrawer.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="globalStructures.h" />
     <ClInclude Include="Map.h" />
   </ItemGroup>
@@ -29,6 +30,7 @@
     <ClCompile Include="AI.cpp" />
     <ClCompile Include="ConsoleController.cpp" />
     <ClCompile Include="ConsoleDrawer.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
   </ItemGroup>

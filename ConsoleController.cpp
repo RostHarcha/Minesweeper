@@ -45,10 +45,6 @@ Command ConsoleController::analyse_command(std::vector<std::string> command) {
   return output;
 }
 
-void ConsoleController::create(Settings _set) {
-  set = _set;
-}
-
 Command ConsoleController::get_input() {
   std::string input;
   std::getline(std::cin, input);

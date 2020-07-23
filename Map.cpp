@@ -2,7 +2,7 @@
 #include "Map.h"
 
 int Map::cell(int x, int y) {
-  return y * set.size_x + x;
+  return y * m_set.size_x + x;
 }
 
 CellState Map::get_state(const int x, const int y) {
@@ -14,15 +14,15 @@ void Map::set_state(const int x, const int y, CellState _state) {
 }
 
 void Map::create_vectors() {
-  auto m_size = set.size_x * set.size_y;
+  auto m_size = m_set.size_x * m_set.size_y;
   mine.resize(m_size);
   state.resize(m_size);
 }
 
 void Map::create_mines(const int first_x, const int first_y) {
   int mines_planted = 0;
-  while (mines_planted <= set.mines) {
-    int rand_cell = rand() % (set.size_x * set.size_y);
+  while (mines_planted <= m_set.mines) {
+    int rand_cell = rand() % (m_set.size_x * m_set.size_y);
     if (rand_cell == cell(first_x, first_y)) {
       continue;
     }
@@ -46,17 +46,18 @@ void Map::clear_map() {
   }
 }
 
-void Map::create(Settings _set, const int first_x, const int first_y) {
-  set = _set;
-  game_state = GameState::game;
+Map::Map(Settings set, const Command first)
+  :m_set(set),
+  game_state(GameState::game)
+{
   create_vectors();
   clear_map();
   clear_mines();
-  create_mines(first_x, first_y);
-  set_state(first_x, first_y, CellState::Oppened);
+  create_mines(first.x, first.y);
+  set_state(first.x, first.y, CellState::Oppened);
   cells_oppened++;
   cell_sign = create_cell_signs();
-  open_empty_cells(cell_sign[cell(first_x, first_y)]);
+  open_empty_cells(cell_sign[cell(first.x, first.y)]);
 }
 
 std::vector<CellState> Map::get_current_state() {
@@ -64,7 +65,7 @@ std::vector<CellState> Map::get_current_state() {
 }
 
 bool Map::on_map(int x, int y) {
-  if (x < set.size_x && x >= 0 && y < set.size_y && y >= 0) return 1;
+  if (x < m_set.size_x && x >= 0 && y < m_set.size_y && y >= 0) return 1;
   else return 0;
 }
 
@@ -82,8 +83,8 @@ int Map::mines_around(int _x, int _y) {
 
 std::vector<int> Map::create_cell_signs() {
   std::vector<int> output;
-  for (int y = 0; y < set.size_y; y++) {
-    for (int x = 0; x < set.size_x; x++) {
+  for (int y = 0; y < m_set.size_y; y++) {
+    for (int x = 0; x < m_set.size_x; x++) {
       output.push_back(mines_around(x, y));
     }
   }
@@ -112,7 +113,7 @@ void Map::open_map() {
   for (int i = 0; i < state.size(); i++) {
     state[i] = CellState::Oppened;
   }
-  cells_oppened = set.size_x * set.size_y;
+  cells_oppened = m_set.size_x * m_set.size_y;
 }
 
 void Map::trigger_mine(int x, int y) {
@@ -141,8 +142,8 @@ void Map::open_empty_cells(int cell_sign) {
     return;
   }
   for (int i = 0; i < 10; i++) {
-    for (int y = 0; y < set.size_y; y++) {
-      for (int x = 0; x < set.size_x; x++) {
+    for (int y = 0; y < m_set.size_y; y++) {
+      for (int x = 0; x < m_set.size_x; x++) {
         if (get_state(x, y) == CellState::Oppened) {
           if (this->cell_sign[cell(x, y)] == 0) {
             open_around(x, y);
@@ -186,7 +187,7 @@ void Map::process_tick(Action action, int x, int y) {
     break;
   }
 
-  if (cells_oppened == set.size_x * set.size_y - (set.mines + 1)) {
+  if (cells_oppened == m_set.size_x * m_set.size_y - (m_set.mines + 1)) {
     game_state = GameState::win;
   }
 }

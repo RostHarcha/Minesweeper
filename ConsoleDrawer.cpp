@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 int ConsoleDrawer::cell(int x, int y) {
-  return y * set.size_x + x;
+  return y * m_set.size_x + x;
 }
 
 void ConsoleDrawer::draw_cell(CellState state, int sign) {
@@ -50,19 +50,26 @@ void ConsoleDrawer::draw_cell(CellState state, int sign) {
   }
 }
 
-void ConsoleDrawer::set_color(int bg, int text) {
+std::vector<int> ConsoleDrawer::empty_signs(Settings set) {
+  std::vector<int> sign;
+  for (auto i = 0; i < set.size_x * set.size_y; i++) {
+    sign.push_back(0);
+  }
+  return sign;
 }
 
-void ConsoleDrawer::create(Settings _set, std::vector<int> _cell_sign) {
-  set = _set;
-  cell_sign = _cell_sign;
-}
+ConsoleDrawer::ConsoleDrawer(Settings set, std::vector<int> cell_sign)
+  :m_set(set),
+  m_cell_sign(cell_sign)
+{}
+
+ConsoleDrawer::ConsoleDrawer(Settings set) : ConsoleDrawer(set, empty_signs(set))
+{}
 
 void ConsoleDrawer::draw(std::vector<CellState> state, std::string comment) {
   system("cls");
-  set_color(15, 0);
   std::cout << comment << "\n  y \\ x\t ";
-  for (int i = 0; i < set.size_x; i++) {
+  for (int i = 0; i < m_set.size_x; i++) {
     if (i < 10) {
       std::cout << i << "   ";
     }
@@ -71,22 +78,20 @@ void ConsoleDrawer::draw(std::vector<CellState> state, std::string comment) {
     }
   }
   std::cout << std::endl;
-  for (int y = 0; y < set.size_y; y++) {
+  for (int y = 0; y < m_set.size_y; y++) {
     std::cout << y << '\t';
-    for (int x = 0; x < set.size_x; x++) {
-      draw_cell(state[cell(x, y)], cell_sign[cell(x, y)]);
+    for (int x = 0; x < m_set.size_x; x++) {
+      draw_cell(state[cell(x, y)], m_cell_sign[cell(x, y)]);
       std::cout << " ";
     }
     std::cout << std::endl;
   }
 }
 
-void ConsoleDrawer::non_signs_draw(Settings _set, std::string comment) {
-  set = _set;
+void ConsoleDrawer::non_signs_draw(std::string comment) {
   std::vector<CellState> state;
-  for (auto i = 0; i < set.size_x * set.size_y; i++) {
+  for (auto i = 0; i < m_set.size_x * m_set.size_y; i++) {
     state.push_back(CellState::Closed);
-    cell_sign.push_back(0);
   }
   draw(state, comment);
 }

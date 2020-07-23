@@ -3,7 +3,7 @@
 #include <vector>
 
 class Map {
-  Settings set;
+  Settings m_set;
   std::vector<bool> mine;
   std::vector<CellState> state;
   std::vector<int> cell_sign;
@@ -29,7 +29,7 @@ class Map {
 public:
   int cells_oppened = 0;
   GameState game_state;
-  void create(Settings _set, const int first_x, const int first_y);
+  Map(Settings set, const Command first_command);
   void process_tick(Action action, int x, int y);
   std::vector<CellState> get_current_state();
   std::vector<int> get_cell_signs();
