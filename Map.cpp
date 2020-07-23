@@ -46,24 +46,6 @@ void Map::clear_map() {
   }
 }
 
-Map::Map(Settings set, const Command first)
-  :m_set(set),
-  game_state(GameState::game)
-{
-  create_vectors();
-  clear_map();
-  clear_mines();
-  create_mines(first.x, first.y);
-  set_state(first.x, first.y, CellState::Oppened);
-  cells_oppened++;
-  cell_sign = create_cell_signs();
-  open_empty_cells(cell_sign[cell(first.x, first.y)]);
-}
-
-std::vector<CellState> Map::get_current_state() {
-  return state;
-}
-
 bool Map::on_map(int x, int y) {
   if (x < m_set.size_x && x >= 0 && y < m_set.size_y && y >= 0) return 1;
   else return 0;
@@ -91,10 +73,6 @@ std::vector<int> Map::create_cell_signs() {
   return output;
 }
 
-std::vector<int> Map::get_cell_signs() {
-  return cell_sign;
-}
-
 void Map::flag(const int x, const int y) {
   if (get_state(x, y) != CellState::Closed) {
     return;
@@ -113,7 +91,7 @@ void Map::open_map() {
   for (int i = 0; i < state.size(); i++) {
     state[i] = CellState::Oppened;
   }
-  cells_oppened = m_set.size_x * m_set.size_y;
+  stat.cells_oppened = m_set.size_x * m_set.size_y;
 }
 
 void Map::trigger_mine(int x, int y) {
@@ -131,7 +109,7 @@ void Map::open_around(const int x, const int y) {
           return;
         }
         set_state(_x, _y, CellState::Oppened);
-        cells_oppened++;
+        stat.cells_oppened++;
       }
     }
   }
@@ -163,8 +141,31 @@ void Map::open(int x, int y) {
     return;
   }
   set_state(x, y, CellState::Oppened);
-  cells_oppened++;
+  stat.cells_oppened++;
   open_empty_cells(cell_sign[cell(x, y)]);
+}
+
+Map::Map(Settings set, const Command first)
+  :m_set(set),
+  game_state(GameState::game),
+  stat{ 0, 0 }
+{
+  create_vectors();
+  clear_map();
+  clear_mines();
+  create_mines(first.x, first.y);
+  set_state(first.x, first.y, CellState::Oppened);
+  stat.cells_oppened++;
+  cell_sign = create_cell_signs();
+  open_empty_cells(cell_sign[cell(first.x, first.y)]);
+}
+
+Statistic Map::get_stat() {
+  return stat;
+}
+
+GameState Map::get_game_state() {
+  return game_state;
 }
 
 void Map::process_tick(Action action, int x, int y) {
@@ -187,7 +188,15 @@ void Map::process_tick(Action action, int x, int y) {
     break;
   }
 
-  if (cells_oppened == m_set.size_x * m_set.size_y - (m_set.mines + 1)) {
+  if (stat.cells_oppened == m_set.size_x * m_set.size_y - (m_set.mines + 1)) {
     game_state = GameState::win;
   }
+}
+
+std::vector<CellState> Map::get_current_state() {
+  return state;
+}
+
+std::vector<int> Map::get_cell_signs() {
+  return cell_sign;
 }

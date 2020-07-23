@@ -7,6 +7,8 @@ class Map {
   std::vector<bool> mine;
   std::vector<CellState> state;
   std::vector<int> cell_sign;
+  GameState game_state;
+  Statistic stat;
 
   int cell(int x, int y);
   void create_vectors();
@@ -27,9 +29,9 @@ class Map {
   void open_empty_cells(int cel_sign);
 
 public:
-  int cells_oppened = 0;
-  GameState game_state;
   Map(Settings set, const Command first_command);
+  Statistic get_stat(); 
+  GameState get_game_state();
   void process_tick(Action action, int x, int y);
   std::vector<CellState> get_current_state();
   std::vector<int> get_cell_signs();

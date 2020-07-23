@@ -2,8 +2,10 @@
 #include <iostream>
 
 void Game::update_comment(bool help) {
+  Statistic stat = map.get_stat();
+  m_comment = "";
   if (help) {
-    m_comment =
+    m_comment +=
       "General view of the command: [action] <x> <y>\n"
       "|help\t\tcall for help\n"
       "|stop\t\tstop the game\n"
@@ -11,13 +13,10 @@ void Game::update_comment(bool help) {
       "|+open <x> <y>\topen the cell and 8 cells around it\n"
       "|flag <x> <y>\tflag the cell\n"
       "|-flag <x> <y>\tremove flag from the cell\n";
-    m_comment += "cells oppened: " + std::to_string(map.cells_oppened);
   }
-  else {
-    m_comment = "cells oppened: " + std::to_string(map.cells_oppened);
-  }
-  m_comment += "\\" + std::to_string(m_set.size_x * m_set.size_y);
-  m_comment += "\t\tmines: " + std::to_string(m_set.mines);
+  m_comment += "cells oppened: " + std::to_string(stat.cells_oppened);
+  m_comment += "/" + std::to_string(m_set.size_x * m_set.size_y);
+  m_comment += "\t\tflags/mines: " + std::to_string(stat.flags) + "/" + std::to_string(m_set.mines);
   if (DEBUG_MODE) {
     m_comment += "\nDEBUG MODE";
   }
@@ -46,7 +45,7 @@ GameState Game::tick() {
   }
 
   drawer.draw(map.get_current_state(), m_comment);
-  return map.game_state;
+  return map.get_game_state();
 }
 
 Settings Game::preset(Settings set) {

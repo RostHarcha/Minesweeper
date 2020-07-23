@@ -11,6 +11,11 @@ struct Settings {
   int seed = 0;
 };
 
+struct Statistic {
+  int cells_oppened = 0;
+  int flags = 0;
+};
+
 enum class Action {
   Open,
   Flag,
