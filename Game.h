@@ -13,13 +13,12 @@ private:
   ConsoleDrawer drawer;
   AI ai;
   std::string m_comment;
-  //GameState m_game_state = GameState::game;
 
   void update_comment(bool help);
   GameState tick();
   Settings preset(Settings set);
   Command first_command(Settings set);
-  void start();
+  void start(GameState game_state);
   
 public:
   Game(Settings set);

@@ -38,11 +38,18 @@ Command ConsoleController::analyse_command(std::vector<std::string> command) {
     if (command[0] == "+open") {
       output.action = Action::OpenAround;
     }
-    output.x = std::atoi(command[1].c_str());
-    output.y = std::atoi(command[2].c_str());
+    int x = std::atoi(command[1].c_str()), y = std::atoi(command[2].c_str());
+    if (on_map(x, y)) {
+      output.x = x, output.y = y;
+    }
     break;
   }
   return output;
+}
+
+bool ConsoleController::on_map(const int x, const int y) {
+  if (x < m_set.size_x && x >= 0 && y < m_set.size_y && y >= 0) return 1;
+  return 0;
 }
 
 Command ConsoleController::get_input() {
@@ -50,4 +57,8 @@ Command ConsoleController::get_input() {
   std::getline(std::cin, input);
 
   return analyse_command(decompose_command(input));
+}
+
+ConsoleController::ConsoleController(Settings set) {
+  m_set = set;
 }

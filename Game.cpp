@@ -77,12 +77,11 @@ Command Game::first_command(Settings set) {
   do {
     localDrawer.non_signs_draw("type 'open <x> <y>' to open the cell");
     command = controller.get_input();
-  } while (command.x < 0 && command.y < 0 && command.action != Action::Open);
+  } while ((command.x < 0 && command.y < 0 && command.action != Action::Open) || command.action == Action::Stop);
   return command;
 }
 
-void Game::start() {
-  GameState game_state = GameState::game;
+void Game::start(GameState game_state = GameState::game) {
   for (;;) {
     switch (game_state) {
     case GameState::game:
@@ -102,9 +101,9 @@ void Game::start() {
 
 Game::Game(Settings set)
   :m_set(preset(set)),
-  controller(),
+  controller(m_set),
   map(m_set, first_command(m_set)),
-  drawer(m_set, map.get_cell_signs()),
+  drawer(m_set, map.get_cell_sign()),
   ai(),
   m_comment("type 'open <x> <y>' to open the cell")
 {

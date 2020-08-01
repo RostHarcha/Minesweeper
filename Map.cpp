@@ -5,6 +5,10 @@ int Map::cell(int x, int y) {
   return y * m_set.size_x + x;
 }
 
+int Map::get_cell_sign(const int x, const int y) {
+  return m_cell_sign[cell(x, y)];
+}
+
 CellState Map::get_state(const int x, const int y) {
   return state[cell(x, y)];
 }
@@ -14,9 +18,9 @@ void Map::set_state(const int x, const int y, CellState _state) {
 }
 
 void Map::create_vectors() {
-  auto m_size = m_set.size_x * m_set.size_y;
-  mine.resize(m_size);
-  state.resize(m_size);
+  auto map_size = m_set.size_x * m_set.size_y;
+  mine.resize(map_size);
+  state.resize(map_size);
 }
 
 void Map::create_mines(const int first_x, const int first_y) {
@@ -48,7 +52,7 @@ void Map::clear_map() {
 
 bool Map::on_map(int x, int y) {
   if (x < m_set.size_x && x >= 0 && y < m_set.size_y && y >= 0) return 1;
-  else return 0;
+  return 0;
 }
 
 int Map::mines_around(int _x, int _y) {
@@ -100,15 +104,15 @@ void Map::trigger_mine(int x, int y) {
   set_state(x, y, CellState::Triggered);
 }
 
-void Map::open_around(const int x, const int y) {
-  for (int _y = y - 1; _y <= y + 1; _y++) {
-    for (int _x = x - 1; _x <= x + 1; _x++) {
-      if (on_map(_x, _y) && get_state(_x, _y) == CellState::Closed) {
-        if (mine[cell(_x, _y)]) {
-          trigger_mine(_x, _y);
+void Map::open_around(const int x0, const int y0) {
+  for (int y = y0 - 1; y <= y0 + 1; y++) {
+    for (int x = x0 - 1; x <= x0 + 1; x++) {
+      if (on_map(x, y) && get_state(x, y) == CellState::Closed) {
+        if (mine[cell(x, y)]) {
+          trigger_mine(x, y);
           return;
         }
-        set_state(_x, _y, CellState::Oppened);
+        set_state(x, y, CellState::Oppened);
         stat.cells_oppened++;
       }
     }
@@ -123,7 +127,7 @@ void Map::open_empty_cells(int cell_sign) {
     for (int y = 0; y < m_set.size_y; y++) {
       for (int x = 0; x < m_set.size_x; x++) {
         if (get_state(x, y) == CellState::Oppened) {
-          if (this->cell_sign[cell(x, y)] == 0) {
+          if (get_cell_sign(x, y) == 0) {
             open_around(x, y);
           }
         }
@@ -142,7 +146,7 @@ void Map::open(int x, int y) {
   }
   set_state(x, y, CellState::Oppened);
   stat.cells_oppened++;
-  open_empty_cells(cell_sign[cell(x, y)]);
+  open_empty_cells(get_cell_sign(x, y));
 }
 
 Map::Map(Settings set, const Command first)
@@ -156,8 +160,8 @@ Map::Map(Settings set, const Command first)
   create_mines(first.x, first.y);
   set_state(first.x, first.y, CellState::Oppened);
   stat.cells_oppened++;
-  cell_sign = create_cell_signs();
-  open_empty_cells(cell_sign[cell(first.x, first.y)]);
+  m_cell_sign = create_cell_signs();
+  open_empty_cells(get_cell_sign(first.x, first.y));
 }
 
 Statistic Map::get_stat() {
@@ -197,6 +201,6 @@ std::vector<CellState> Map::get_current_state() {
   return state;
 }
 
-std::vector<int> Map::get_cell_signs() {
-  return cell_sign;
+std::vector<int> Map::get_cell_sign() {
+  return m_cell_sign;
 }

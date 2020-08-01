@@ -9,14 +9,14 @@ int ConsoleDrawer::cell(int x, int y) {
 }
 
 void ConsoleDrawer::draw_cell(CellState state, int sign) {
-  auto set_color = [](const int bg, const int text) {
+  auto set_color = [](const int bg_color, const int text_color) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hConsole, (WORD)((bg << 4) | text));
+    SetConsoleTextAttribute(hConsole, (WORD)((bg_color << 4) | text_color));
   };
-  auto print_cell = [set_color](const char icon, const int bg, const int text) {
+  auto print_cell = [set_color](const char icon, const int bg_color, const int text_color) {
     set_color(15, 0);
     std::cout << "[";
-    set_color(bg, text);
+    set_color(bg_color, text_color);
     std::cout << icon;
     set_color(15, 0);
     std::cout << "]";
