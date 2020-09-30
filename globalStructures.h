@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-constexpr auto DEBUG_MODE = 0;
+constexpr auto DEBUG_MODE = 1;
 constexpr auto AI_MODE = 0;
 
 struct Settings {

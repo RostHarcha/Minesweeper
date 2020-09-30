@@ -9,12 +9,34 @@ int Map::get_cell_sign(const int x, const int y) {
   return m_cell_sign[cell(x, y)];
 }
 
+bool Map::get_mine(const int x, const int y) {
+  return mine[cell(x, y)];
+}
+
+std::vector<CellState> Map::get_current_state() {
+  return state;
+}
+
+std::vector<int> Map::get_cell_sign() {
+  return m_cell_sign;
+}
+
 CellState Map::get_state(const int x, const int y) {
   return state[cell(x, y)];
 }
 
+Statistic Map::get_stat() {
+  return stat;
+}
+
+GameState Map::get_game_state() {
+  return game_state;
+}
+
 void Map::set_state(const int x, const int y, CellState _state) {
-  state[cell(x, y)] = _state;
+  if (on_map(x, y)) {
+    state[cell(x, y)] = _state;
+  }
 }
 
 void Map::create_vectors() {
@@ -51,17 +73,25 @@ void Map::clear_map() {
 }
 
 bool Map::on_map(int x, int y) {
-  if (x < m_set.size_x && x >= 0 && y < m_set.size_y && y >= 0) return 1;
+  if (x < m_set.size_x && x >= 0 && y < m_set.size_y && y >= 0) {
+    return 1;
+  }
   return 0;
 }
 
 int Map::mines_around(int _x, int _y) {
   int output = 0;
-  if (mine[cell(_x, _y)]) return 9;
+  if (get_mine(_x, _y)) {
+    return 9;
+  }
 
   for (int y = _y - 1; y <= _y + 1; y++) {
     for (int x = _x - 1; x <= _x + 1; x++) {
-      if (on_map(x, y)) if (mine[cell(x, y)]) output++;
+      if (on_map(x, y)) {
+        if (get_mine(x, y)) {
+          output++;
+        }
+      }
     }
   }
   return output;
@@ -108,7 +138,7 @@ void Map::open_around(const int x0, const int y0) {
   for (int y = y0 - 1; y <= y0 + 1; y++) {
     for (int x = x0 - 1; x <= x0 + 1; x++) {
       if (on_map(x, y) && get_state(x, y) == CellState::Closed) {
-        if (mine[cell(x, y)]) {
+        if (get_mine(x, y)) {
           trigger_mine(x, y);
           return;
         }
@@ -137,7 +167,7 @@ void Map::open_empty_cells(int cell_sign) {
 }
 
 void Map::open(int x, int y) {
-  if (mine[cell(x, y)]) {
+  if (get_mine(x, y)) {
     trigger_mine(x, y);
     return;
   }
@@ -164,14 +194,6 @@ Map::Map(Settings set, const Command first)
   open_empty_cells(get_cell_sign(first.x, first.y));
 }
 
-Statistic Map::get_stat() {
-  return stat;
-}
-
-GameState Map::get_game_state() {
-  return game_state;
-}
-
 void Map::process_tick(Action action, int x, int y) {
   if (!on_map(x, y)) {
     return;
@@ -195,12 +217,4 @@ void Map::process_tick(Action action, int x, int y) {
   if (stat.cells_oppened == m_set.size_x * m_set.size_y - (m_set.mines + 1)) {
     game_state = GameState::win;
   }
-}
-
-std::vector<CellState> Map::get_current_state() {
-  return state;
-}
-
-std::vector<int> Map::get_cell_sign() {
-  return m_cell_sign;
 }

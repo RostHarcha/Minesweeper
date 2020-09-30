@@ -15,7 +15,6 @@ std::vector<std::string> ConsoleController::decompose_command(std::string input)
 
 Command ConsoleController::analyse_command(std::vector<std::string> command) {
   Command output;
-
   switch (command.size()) {
   case 1:
     if (command[0] == "stop") {

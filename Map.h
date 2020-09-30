@@ -12,6 +12,7 @@ class Map {
 
   int cell(int x, int y);
   int get_cell_sign(const int x, const int y);
+  bool get_mine(const int x, const int y);
   void create_vectors();
   void create_mines(const int first_x, const int first_y);
   void clear_mines();
